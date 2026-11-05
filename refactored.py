@@ -55,17 +55,15 @@ def process_type_c(amount: float) -> float:
 
 
 def process(data: ProcessData | None) -> float:
-  """Головна рефакторена функція (з dataclass та Enum)."""
-  if data is None:
-    return 0
-
-  tax = calculate_tax(data.amount)
-
-  if data.type == ProcessType.A:
-    return process_type_a(data.amount, tax)
-  elif data.type == ProcessType.B:
-    return process_type_b(data.amount, tax)
-  elif data.type == ProcessType.C:
-    return process_type_c(data.amount)
-  else:
-    return data.amount * 0.5
+  """Головна рефакторена функція (Крок 3: із сучасним match-case)."""
+  match data:
+    case None:
+      return 0
+    case ProcessData(type=ProcessType.A, amount=amt):
+      return process_type_a(amt, calculate_tax(amt))
+    case ProcessData(type=ProcessType.B, amount=amt):
+      return process_type_b(amt, calculate_tax(amt))
+    case ProcessData(type=ProcessType.C, amount=amt):
+      return process_type_c(amt)
+    case _:
+      return getattr(data, "amount", 0) * 0.5
